@@ -1,0 +1,21 @@
+{
+  "name": "crawler-usp",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "repository": "git@github.com:T-Guerrero/crawler-usp.git",
+  "author": "Thiago Guerrero <tgbalera@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "selenium-webdriver": "^4.0.0-rc-1"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.4.0"
+  }
+}
