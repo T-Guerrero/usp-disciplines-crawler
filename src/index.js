@@ -1,10 +1,12 @@
 import {
   fetchDepartmentsByUnity,
+  fetchDisciplinesByDepartment,
   fetchUnities,
   getHrefFrom,
 } from './actions.js';
 import { closeDriver, startDriver } from './driver.js';
 import Department from './entity/Department.js';
+import Discipline from './entity/Discipline.js';
 import fs from 'fs';
 
 function saveDataInJson(data, fileName) {
@@ -15,32 +17,44 @@ function saveDataInJson(data, fileName) {
 }
 
 const crawler = async () => {
-  const data = [];
+  const data = {};
+
   try {
     const unities_url =
       'https://uspdigital.usp.br/jupiterweb/jupColegiadoLista?tipo=D';
     await startDriver(unities_url);
-    const unities = await fetchUnities();
-    const unitiesLink = [];
-
-    for (let unity of unities) {
-      const link = await getHrefFrom(unity);
-      unitiesLink.push(link);
+    let unities = await fetchUnities();
+    for (let i in unities) {
+      unities[i] = await getHrefFrom(unities[i]);
     }
 
-    for (let unity of unitiesLink) {
+    for (let unity of unities) {
       const departments = await fetchDepartmentsByUnity(unity);
-      if (departments != null)
+      if (departments != null) {
         for (let department of departments) {
-          let element = new Department(
-            await department.obj.getText(),
-            department.initials
-          );
-          data.push(element);
+          const name = await department.obj.getText();
+          const url = await getHrefFrom(department.obj);
+          const initials = department.initials;
+          department = new Department(name, initials, url);
+          data[initials] = department;
+        }
+      }
+    }
+
+    const departments = Object.values(data);
+    for (let department of departments) {
+      const disciplines = await fetchDisciplinesByDepartment(department.url);
+      if (disciplines != null)
+        for (let discipline of disciplines) {
+          const name = await discipline.obj.getText();
+          const url = await getHrefFrom(discipline.obj);
+          const initials = discipline.initials;
+          discipline = new Discipline(name, initials, url);
+          department.addDiscipline(discipline);
         }
     }
 
-    saveDataInJson(data, 'departments.json');
+    if (!process.env.TEST) saveDataInJson(data, 'data.json');
 
     await closeDriver();
   } catch (error) {
