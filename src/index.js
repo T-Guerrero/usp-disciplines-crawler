@@ -1,6 +1,7 @@
 import {
   fetchDepartmentsByUnity,
   fetchDisciplinesByDepartment,
+  fetchPreRequisitesByDiscipline,
   fetchUnities,
   getHrefFrom,
 } from './actions.js';
@@ -17,7 +18,7 @@ function saveDataInJson(data, fileName) {
 }
 
 const crawler = async () => {
-  const data = {};
+  let data = {};
 
   try {
     const unities_url =
@@ -41,7 +42,7 @@ const crawler = async () => {
       }
     }
 
-    const departments = Object.values(data);
+    let departments = Object.values(data);
     for (let department of departments) {
       const disciplines = await fetchDisciplinesByDepartment(department.url);
       if (disciplines != null)
@@ -52,6 +53,13 @@ const crawler = async () => {
           discipline = new Discipline(name, initials, url);
           department.addDiscipline(discipline);
         }
+    }
+
+    for (let department of departments) {
+      for (let discipline of department.disciplines) {
+        const preReq = await fetchPreRequisitesByDiscipline(discipline.url);
+        discipline.requisites = preReq;
+      }
     }
 
     if (!process.env.TEST) saveDataInJson(data, 'data.json');
