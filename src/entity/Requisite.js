@@ -1,11 +1,11 @@
 export class RequisitesByCourse {
   constructor(courseCode) {
     this.courseCode = courseCode;
-    this.requisites = [];
+    this.disciplines = [];
   }
 
   addRequisite(newRequisite) {
-    this.requisites.push(newRequisite);
+    this.disciplines.push(newRequisite);
   }
 }
 

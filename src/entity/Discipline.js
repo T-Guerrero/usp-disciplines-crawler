@@ -1,7 +1,7 @@
 export default class Discipline {
-  constructor(name, initials, url) {
+  constructor(name, code, url) {
     this.name = name;
-    this.initials = initials;
+    this.code = code;
     this.url = url;
 
     this.requisites = [];

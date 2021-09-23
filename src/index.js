@@ -6,8 +6,6 @@ import {
   getHrefFrom,
 } from './actions.js';
 import { closeDriver, startDriver } from './driver.js';
-import Department from './entity/Department.js';
-import Discipline from './entity/Discipline.js';
 import fs from 'fs';
 
 function saveDataInJson(data, fileName) {
@@ -18,7 +16,7 @@ function saveDataInJson(data, fileName) {
 }
 
 const crawler = async () => {
-  let data = {};
+  const data = {};
 
   try {
     const unities_url =
@@ -29,41 +27,40 @@ const crawler = async () => {
       unities[i] = await getHrefFrom(unities[i]);
     }
 
+    console.log('Unities Fetched!');
+
     for (let unity of unities) {
       const departments = await fetchDepartmentsByUnity(unity);
-      if (departments != null) {
-        for (let department of departments) {
-          const name = await department.obj.getText();
-          const url = await getHrefFrom(department.obj);
-          const initials = department.initials;
-          department = new Department(name, initials, url);
-          data[initials] = department;
-        }
+      if (departments != null)
+        for (let department of departments) data[department.code] = department;
+    }
+
+    console.log('Departments Fetched!');
+
+    const departments = Object.values(data);
+    for (let department of departments) {
+      const disciplines = await fetchDisciplinesByDepartment(department.url);
+      if (disciplines != null) {
+        department.disciplines = disciplines;
       }
     }
 
-    let departments = Object.values(data);
-    for (let department of departments) {
-      const disciplines = await fetchDisciplinesByDepartment(department.url);
-      if (disciplines != null)
-        for (let discipline of disciplines) {
-          const name = await discipline.obj.getText();
-          const url = await getHrefFrom(discipline.obj);
-          const initials = discipline.initials;
-          discipline = new Discipline(name, initials, url);
-          department.addDiscipline(discipline);
-        }
-    }
+    console.log('Disciplines Fetched!');
 
     for (let department of departments) {
       for (let discipline of department.disciplines) {
         const preReq = await fetchPreRequisitesByDiscipline(discipline.url);
-        discipline.requisites = preReq;
+        if (preReq != null) {
+          discipline.requisites = preReq;
+        }
       }
     }
 
-    if (!process.env.TEST) saveDataInJson(data, 'data.json');
+    console.log('PreRequisites Fetched!');
 
+    saveDataInJson(data, 'data.json');
+
+    console.log('Done!');
     await closeDriver();
   } catch (error) {
     console.log('Error: ' + error);
