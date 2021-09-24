@@ -122,7 +122,7 @@ export async function fetchPreRequisitesByDiscipline(disciplineLink) {
     const differentCourse = (await row.getAttribute('bgcolor')) == '#658CCF';
 
     if (differentCourse) {
-      const regex = /Curso: (\d{5})/;
+      const regex = /Curso: (\d{4,5})/;
       const courseName = await row.findElement(By.css('font')).getText();
       const courseCode = courseName.match(regex)[1];
 
