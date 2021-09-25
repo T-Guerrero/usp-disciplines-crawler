@@ -101,12 +101,17 @@ export async function fetchPreRequisitesByDiscipline(disciplineLink) {
   const requisites = [];
   await driver.get(disciplineLink);
 
+  let errorMessage = await driver.findElements(By.id('web_mensagem'));
+  const hasDiscipline = errorMessage.length == 0;
+
+  if (!hasDiscipline) return null;
+
   let information = await driver.findElement(By.name('form1'));
   const buttons = await information.findElements(By.css('table font a'));
   const preReqLink = await getHrefFrom(buttons[0]);
   await driver.get(preReqLink);
 
-  const errorMessage = await driver.findElements(By.id('web_mensagem'));
+  errorMessage = await driver.findElements(By.id('web_mensagem'));
   const hasPreReqs = errorMessage.length == 0;
 
   if (!hasPreReqs) return null;
@@ -119,29 +124,34 @@ export async function fetchPreRequisitesByDiscipline(disciplineLink) {
   const rows = await information.findElements(By.css('tr'));
 
   let currentCourse;
-  let duplicatedCourse = false;
+  let repeatedCourse = false;
   for (let row of rows) {
     const differentCourse = (await row.getAttribute('bgcolor')) == '#658CCF';
 
     if (differentCourse) {
-      const regex = /Curso: (\d{4,5})/;
+      const codeRegex = /Curso: (\d{4,5})/;
       const courseName = await row.findElement(By.css('font')).getText();
-      const courseCode = courseName.match(regex)[1];
+      const courseCode = courseName.match(codeRegex)[1];
 
       if (currentCourse && courseCode == currentCourse.courseCode)
-        duplicatedCourse = true;
+        repeatedCourse = true;
       else {
-        duplicatedCourse = false;
         currentCourse = new RequisitesByCourse(courseCode);
         requisites.push(currentCourse);
+        repeatedCourse = false;
       }
-    } else if (!duplicatedCourse) {
+    } else if (!repeatedCourse) {
       row = await row.findElements(By.css('td'));
-      const preReq = await row[0].getText();
+      const text = await row[0].getText();
 
-      if (preReq != ' ') {
+      if (text == 'ou') {
+        // Another set of options
+        currentCourse = new RequisitesByCourse(currentCourse.courseCode);
+        requisites.push(currentCourse);
+      } else if (text != ' ') {
+        // Valid options
         const type = await row[1].getText();
-        const req = new Requisite(preReq, type);
+        const req = new Requisite(text, type);
         currentCourse.addRequisite(req);
       }
     }
