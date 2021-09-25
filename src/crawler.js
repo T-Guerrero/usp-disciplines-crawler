@@ -20,7 +20,6 @@ export default class Crawler {
       let institutes = await fetchInstitutes();
       institutes = await this.#processInstitutes(institutes);
 
-      institutes = [institutes[1]];
       for (let institute of institutes) {
         const departments = await fetchDepartmentsByInstitute(institute);
         this.#processDepartments(departments);
