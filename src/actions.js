@@ -1,15 +1,15 @@
 import { withTagName, By } from 'selenium-webdriver';
 import { driver } from './driver.js';
-import Department from './entity/Department.js';
-import Discipline from './entity/Discipline.js';
-import { RequisitesByCourse, Requisite } from './entity/Requisite.js';
+import Department from './entities/Department.js';
+import Discipline from './entities/Discipline.js';
+import { RequisitesByCourse, Requisite } from './entities/Requisite.js';
 
 export async function getHrefFrom(element) {
   return await element.getAttribute('href');
 }
 
-export async function fetchUnities() {
-  const unities = [];
+export async function fetchInstitutes() {
+  const institutes = [];
   const title = await driver.findElement(By.css('#layout_conteudo table'));
   const table = await driver.findElement(withTagName('table').below(title));
   let rows = await table.findElements(By.css('tr'));
@@ -17,16 +17,16 @@ export async function fetchUnities() {
   rows = rows.slice(1, rows.length);
 
   for (let row of rows) {
-    let unity = await row.findElement(By.css('a'));
-    unities.push(unity);
+    let institute = await row.findElement(By.css('a'));
+    institutes.push(institute);
   }
 
-  return unities;
+  return institutes;
 }
 
-export async function fetchDepartmentsByUnity(unityLink) {
+export async function fetchDepartmentsByInstitute(instituteLink) {
   const departments = [];
-  await driver.get(unityLink);
+  await driver.get(instituteLink);
   await driver.findElement(By.linkText('Disciplinas por Departamento')).click();
 
   const errorMessage = await driver.findElements(By.id('web_mensagem'));
@@ -34,8 +34,10 @@ export async function fetchDepartmentsByUnity(unityLink) {
 
   if (!hasDepartments) return null;
 
-  const unityName = await driver.findElement(By.css('table b'));
-  const table = await driver.findElement(withTagName('table').below(unityName));
+  const instituteName = await driver.findElement(By.css('table b'));
+  const table = await driver.findElement(
+    withTagName('table').below(instituteName)
+  );
   let rows = await table.findElements(By.css('tr'));
 
   rows = rows.slice(1, rows.length);
