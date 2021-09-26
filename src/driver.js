@@ -30,7 +30,7 @@ export async function fetchInstitutesLinks() {
 
   for (let row of rows) {
     let institute = await row.findElement(By.css('a'));
-    institutes.push(getHrefFrom(institute));
+    institutes.push(await getHrefFrom(institute));
   }
 
   return institutes;
