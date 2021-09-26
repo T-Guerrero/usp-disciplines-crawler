@@ -1,9 +1,9 @@
 # USP Disciplines Crawler
 ## About
-  Crawler that gets all USP disciplines and their prerequisites separated by department.
+  Smart crawler that gets all USP disciplines and their prerequisites separated by department.
 
 ## Running
-  Set up `.env` file by choosing to run in `chrome` or `firefox`:
+  Set up `.env` file by choosing to run either in `chrome` or `firefox`. Don't worry, you don't need to have any of them installed. Just choose the one that you think is going to run best in your computer.
   ```bash
   # only chrome or firefox are suported
   BROWSER=
