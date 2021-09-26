@@ -1,11 +1,11 @@
 import {
+  startDriver,
+  closeDriver,
   fetchDepartmentsByInstitute,
   fetchDisciplinesByDepartment,
   fetchPreRequisitesByDiscipline,
-  fetchInstitutes,
-  getHrefFrom,
-} from './actions.js';
-import { startDriver, closeDriver } from './driver.js';
+  fetchInstitutesLinks,
+} from './driver.js';
 import fs from 'fs';
 
 export default class Crawler {
@@ -17,11 +17,10 @@ export default class Crawler {
   async run() {
     try {
       await startDriver(this.url);
-      let institutes = await fetchInstitutes();
-      institutes = await this.#processInstitutes(institutes);
+      const institutes = await fetchInstitutesLinks();
 
-      for (let institute of institutes) {
-        const departments = await fetchDepartmentsByInstitute(institute);
+      for (let link of institutes) {
+        const departments = await fetchDepartmentsByInstitute(link);
         this.#processDepartments(departments);
       }
 
@@ -59,13 +58,6 @@ export default class Crawler {
     fs.writeFile(fileName, converted_data, (err) => {
       if (err) console.log('Error saving the file: ' + err);
     });
-  }
-
-  async #processInstitutes(institutes) {
-    for (let i in institutes) {
-      institutes[i] = await getHrefFrom(institutes[i]);
-    }
-    return institutes;
   }
 
   #processDepartments(departments) {
