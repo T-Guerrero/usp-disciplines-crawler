@@ -9,15 +9,14 @@ import {
 import fs from 'fs';
 
 export default class Crawler {
-  constructor(initialUrl) {
-    this.url = initialUrl;
+  constructor() {
     this.data = {};
   }
 
-  async run() {
+  async run(initialUrl) {
     try {
-      await startDriver(this.url);
-      const institutes = await fetchInstitutesLinks();
+      await startDriver();
+      const institutes = await fetchInstitutesLinks(initialUrl);
 
       for (let link of institutes) {
         const departments = await fetchDepartmentsByInstitute(link);
