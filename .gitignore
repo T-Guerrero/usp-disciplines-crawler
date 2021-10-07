@@ -3,4 +3,4 @@ node_modules
 *.log
 .eslintcache
 .vscode
-data.json
+data

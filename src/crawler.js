@@ -31,9 +31,12 @@ export default class Crawler {
   }
 
   saveData(fileName) {
+    if (!fs.existsSync('./data')) {
+      fs.mkdirSync('./data');
+    }
     const converted_data = JSON.stringify(this.data);
-    fs.writeFile(fileName, converted_data, (err) => {
-      if (err) console.log('Error saving the file: ' + err);
+    fs.writeFile(`./data/${fileName}`, converted_data, (err) => {
+      if (err) console.log(`Error creating ${fileName}.json: ${err}`);
     });
   }
 
