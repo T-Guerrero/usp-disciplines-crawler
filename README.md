@@ -3,6 +3,10 @@
   Smart crawler that gets all USP disciplines and their prerequisites separated by department.
 
 ## Running
+
+❗ | Obs: It's needed an operational system with a GUI
+:---: | :---
+
   Having [Node.js](https://nodejs.org/en/) and [yarn](https://yarnpkg.com/) installed, run:
 ```bash
 $> yarn install
