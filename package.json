@@ -10,8 +10,6 @@
     "start": "node src"
   },
   "dependencies": {
-    "chromedriver": "^93.0.1",
-    "dotenv": "^10.0.0",
     "geckodriver": "^2.0.4",
     "selenium-webdriver": "^4.0.0-rc-1"
   },

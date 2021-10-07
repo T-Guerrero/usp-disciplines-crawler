@@ -1,4 +1,3 @@
-import 'chromedriver';
 import 'geckodriver';
 import { Builder, withTagName, By } from 'selenium-webdriver';
 import Department from './entities/Department.js';
@@ -8,7 +7,7 @@ import { RequisitesByCourse, Requisite } from './entities/Requisite.js';
 export let driver;
 
 export async function startDriver() {
-  driver = await new Builder().forBrowser(process.env.BROWSER).build();
+  driver = await new Builder().forBrowser('firefox').build();
 }
 
 export async function closeDriver() {
