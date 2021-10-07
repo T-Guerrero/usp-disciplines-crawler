@@ -15,40 +15,18 @@ export default class Crawler {
 
   async run(initialUrl) {
     try {
-      await startDriver();
-      const institutes = await fetchInstitutesLinks(initialUrl);
-
-      for (let link of institutes) {
-        const departments = await fetchDepartmentsByInstitute(link);
-        this.#processDepartments(departments);
-      }
-
+      await this.#getDepartments(initialUrl);
       console.log('Departments Fetched!');
 
       const departments = Object.values(this.data);
-      for (let department of departments) {
-        const disciplines = await fetchDisciplinesByDepartment(department.url);
-        this.#processDisciplines(department, disciplines);
-      }
-
+      await this.#getDisciplines(departments);
       console.log('Disciplines Fetched!');
 
-      for (let department of departments) {
-        for (let i in department.disciplines) {
-          const preReqs = await fetchPreRequisitesByDiscipline(
-            department.disciplines[i].url
-          );
-          this.#processPreReqs(department, i, preReqs);
-        }
-      }
-
+      await this.#getPreReqs(departments);
       console.log('PreRequisites Fetched!');
-
-      await closeDriver();
-
       console.log('Done!');
     } catch (error) {
-      console.log('Error: ' + error);
+      console.log('General Error: ' + error);
     }
   }
 
@@ -59,23 +37,43 @@ export default class Crawler {
     });
   }
 
-  #processDepartments(departments) {
-    if (departments != null) {
-      for (let department of departments)
-        this.data[department.code] = department;
+  async #getDepartments(url) {
+    await startDriver();
+    const institutes = await fetchInstitutesLinks(url);
+
+    for (let link of institutes) {
+      const departments = await fetchDepartmentsByInstitute(link);
+      if (departments != null) {
+        for (let department of departments)
+          this.data[department.code] = department;
+      }
     }
+    await closeDriver();
   }
 
-  #processDisciplines(department, disciplines) {
-    if (disciplines != null) {
-      this.data[department.code].disciplines = disciplines;
+  async #getDisciplines(departments) {
+    await startDriver();
+    for (let department of departments) {
+      const disciplines = await fetchDisciplinesByDepartment(department.url);
+      if (disciplines != null) {
+        this.data[department.code].disciplines = disciplines;
+      }
     }
+    await closeDriver();
   }
 
-  #processPreReqs(department, disciplineIndex, preReqs) {
-    if (preReqs != null) {
-      this.data[department.code].disciplines[disciplineIndex].requisites =
-        preReqs;
+  async #getPreReqs(departments) {
+    for (let department of departments) {
+      await startDriver();
+      for (let i in department.disciplines) {
+        const preReqs = await fetchPreRequisitesByDiscipline(
+          department.disciplines[i].url
+        );
+        if (preReqs != null) {
+          this.data[department.code].disciplines[i].requisites = preReqs;
+        }
+      }
+      await closeDriver();
     }
   }
 }
