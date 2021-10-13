@@ -27,7 +27,7 @@ export default class singleFileStrategy {
 
     await this.#getPreReqs(departments);
     console.log('PreRequisites Fetched!');
-    this.saveMethod('data.json');
+    this.saveMethod(this.data, 'data.json');
   }
 
   async #getDepartments(url) {
