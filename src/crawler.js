@@ -69,6 +69,11 @@ export default class Crawler {
     for (let department of departments) {
       await startDriver();
       for (let i in department.disciplines) {
+        if (i == department.disciplines.length / 2) {
+          // avoid session timeout
+          await closeDriver();
+          await startDriver();
+        }
         const preReqs = await fetchPreRequisitesByDiscipline(
           department.disciplines[i].url
         );
