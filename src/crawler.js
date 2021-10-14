@@ -3,11 +3,11 @@ import fs from 'fs';
 export default class Crawler {
   constructor(strategy) {
     this.strategy = strategy;
+    this.strategy.setSaveMethod(this.saveData);
   }
 
   async run(initialUrl) {
     try {
-      this.strategy.setSaveMethod(this.saveData);
       await this.strategy.run(initialUrl);
       console.log('Done!');
     } catch (error) {
@@ -20,7 +20,7 @@ export default class Crawler {
       fs.mkdirSync('./data');
     }
     const converted_data = JSON.stringify(data);
-    fs.writeFile(`./data/${fileName}`, converted_data, (err) => {
+    fs.writeFile(`./data/${fileName}.json`, converted_data, (err) => {
       if (err) console.log(`Error creating ${fileName}.json: ${err}`);
     });
   }

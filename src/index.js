@@ -1,6 +1,7 @@
 import Crawler from './crawler.js';
 import { argv } from 'process';
-import singleFileStrategy from './strategies/singleFileStrategy.js';
+import SingleFileStrategy from './strategies/singleFileStrategy.js';
+import MultiFileStrategy from './strategies/multiFileStrategy.js';
 
 if (argv.length < 3) throw '[ERROR]Invalid number of arguments';
 
@@ -10,11 +11,14 @@ const execType = argv[2];
 let crawler, strategy;
 switch (execType) {
   case 'singlefile':
-    strategy = new singleFileStrategy();
-    crawler = new Crawler(strategy);
+    strategy = new SingleFileStrategy();
+    break;
+  case 'multifile':
+    strategy = new MultiFileStrategy();
     break;
   default:
-    throw '[ERROR]Invalid argument! Valid ones: singlefile';
+    throw '[ERROR]Invalid argument! Valid ones: singlefile, multifile';
 }
 
+crawler = new Crawler(strategy);
 await crawler.run(institutes_url);

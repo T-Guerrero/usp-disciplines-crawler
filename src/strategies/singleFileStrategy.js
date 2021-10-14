@@ -7,7 +7,7 @@ import {
   fetchInstitutesLinks,
 } from '../driver.js';
 
-export default class singleFileStrategy {
+export default class SingleFileStrategy {
   constructor() {
     this.data = {};
     this.saveMethod = undefined;
@@ -27,7 +27,7 @@ export default class singleFileStrategy {
 
     await this.#getPreReqs(departments);
     console.log('PreRequisites Fetched!');
-    this.saveMethod(this.data, 'data.json');
+    this.saveMethod(this.data, 'data');
   }
 
   async #getDepartments(url) {
