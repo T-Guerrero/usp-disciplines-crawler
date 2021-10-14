@@ -55,7 +55,7 @@ export async function fetchDepartmentsByInstitute(instituteLink) {
       const errorMessage = await driver.findElements(By.id('web_mensagem'));
       const hasDepartments = errorMessage.length == 0;
 
-      if (!hasDepartments) return null;
+      if (!hasDepartments) return [];
 
       const instituteName = await driver.findElement(By.css('table b'));
       const table = await driver.findElement(
@@ -97,7 +97,7 @@ export async function fetchDisciplinesByDepartment(departmentLink) {
       );
       const hasDisciplines = errorMessage.length == 0;
 
-      if (!hasDisciplines) return null;
+      if (!hasDisciplines) return [];
 
       const tables = await driver.findElements(
         By.css('#layout_conteudo table')
@@ -146,7 +146,7 @@ export async function fetchPreRequisitesByDiscipline(disciplineLink) {
       let errorMessage = await driver.findElements(By.id('web_mensagem'));
       const hasDiscipline = errorMessage.length == 0;
 
-      if (!hasDiscipline) return null;
+      if (!hasDiscipline) return [];
 
       let information = await driver.findElement(By.name('form1'));
       const buttons = await information.findElements(By.css('table font a'));
@@ -156,7 +156,7 @@ export async function fetchPreRequisitesByDiscipline(disciplineLink) {
       errorMessage = await driver.findElements(By.id('web_mensagem'));
       const hasPreReqs = errorMessage.length == 0;
 
-      if (!hasPreReqs) return null;
+      if (!hasPreReqs) return [];
 
       information = await driver.findElement(By.name('form1'));
       information = await information

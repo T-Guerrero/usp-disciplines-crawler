@@ -25,9 +25,9 @@ export default class MultiFileStrategy {
       await startDriver();
       const department = this.departments[i];
       const disciplines = await fetchDisciplinesByDepartment(department.url);
+      department.disciplines = disciplines;
 
-      if (disciplines != null) {
-        department.disciplines = disciplines;
+      if (disciplines.length > 0) {
         await this.#getPreReqsByDepartment(department);
         this.saveMethod(department, department.code);
       }
@@ -46,9 +46,7 @@ export default class MultiFileStrategy {
 
     for (let link of institutes) {
       const departments = await fetchDepartmentsByInstitute(link);
-      if (departments != null) {
-        this.departments = this.departments.concat(departments);
-      }
+      this.departments = this.departments.concat(departments);
     }
     await closeDriver();
   }
@@ -58,10 +56,7 @@ export default class MultiFileStrategy {
       const preReqs = await fetchPreRequisitesByDiscipline(
         department.disciplines[j].url
       );
-
-      if (preReqs != null) {
-        department.disciplines[j].requisites = preReqs;
-      }
+      department.disciplines[j].requisites = preReqs;
     }
   }
 }

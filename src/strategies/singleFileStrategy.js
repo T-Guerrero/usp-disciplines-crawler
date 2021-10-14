@@ -35,9 +35,7 @@ export default class SingleFileStrategy {
 
     for (let link of institutes) {
       const departments = await fetchDepartmentsByInstitute(link);
-      if (departments != null) {
-        this.data = this.data.concat(departments);
-      }
+      this.data = this.data.concat(departments);
     }
     await closeDriver();
   }
@@ -47,9 +45,7 @@ export default class SingleFileStrategy {
     for (let i in this.data) {
       const department = this.data[i];
       const disciplines = await fetchDisciplinesByDepartment(department.url);
-      if (disciplines != null) {
-        department.disciplines = disciplines;
-      }
+      department.disciplines = disciplines;
     }
     await closeDriver();
   }
@@ -67,9 +63,7 @@ export default class SingleFileStrategy {
         const preReqs = await fetchPreRequisitesByDiscipline(
           department.disciplines[j].url
         );
-        if (preReqs != null) {
-          department.disciplines[i].requisites = preReqs;
-        }
+        department.disciplines[i].requisites = preReqs;
       }
       await closeDriver();
     }
