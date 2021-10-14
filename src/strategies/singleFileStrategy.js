@@ -9,7 +9,7 @@ import {
 
 export default class SingleFileStrategy {
   constructor() {
-    this.data = {};
+    this.data = [];
     this.saveMethod = undefined;
   }
 
@@ -21,11 +21,10 @@ export default class SingleFileStrategy {
     await this.#getDepartments(initialUrl);
     console.log('Departments Fetched!');
 
-    const departments = Object.values(this.data);
-    await this.#getDisciplines(departments);
+    await this.#getDisciplines();
     console.log('Disciplines Fetched!');
 
-    await this.#getPreReqs(departments);
+    await this.#getPreReqs();
     console.log('PreRequisites Fetched!');
     this.saveMethod(this.data, 'data');
   }
@@ -37,38 +36,39 @@ export default class SingleFileStrategy {
     for (let link of institutes) {
       const departments = await fetchDepartmentsByInstitute(link);
       if (departments != null) {
-        for (let department of departments)
-          this.data[department.code] = department;
+        this.data = this.data.concat(departments);
       }
     }
     await closeDriver();
   }
 
-  async #getDisciplines(departments) {
+  async #getDisciplines() {
     await startDriver();
-    for (let department of departments) {
+    for (let i in this.data) {
+      const department = this.data[i];
       const disciplines = await fetchDisciplinesByDepartment(department.url);
       if (disciplines != null) {
-        this.data[department.code].disciplines = disciplines;
+        department.disciplines = disciplines;
       }
     }
     await closeDriver();
   }
 
-  async #getPreReqs(departments) {
-    for (let department of departments) {
+  async #getPreReqs() {
+    for (let i in this.data) {
       await startDriver();
-      for (let i in department.disciplines) {
-        if (i == department.disciplines.length / 2) {
+      const department = this.data[i];
+      for (let j in department.disciplines) {
+        if (j == department.disciplines.length / 2) {
           // avoid session timeout
           await closeDriver();
           await startDriver();
         }
         const preReqs = await fetchPreRequisitesByDiscipline(
-          department.disciplines[i].url
+          department.disciplines[j].url
         );
         if (preReqs != null) {
-          this.data[department.code].disciplines[i].requisites = preReqs;
+          department.disciplines[i].requisites = preReqs;
         }
       }
       await closeDriver();
