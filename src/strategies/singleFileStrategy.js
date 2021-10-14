@@ -42,8 +42,7 @@ export default class SingleFileStrategy {
 
   async #getDisciplines() {
     await startDriver();
-    for (let i in this.data) {
-      const department = this.data[i];
+    for (let department of this.data) {
       const disciplines = await fetchDisciplinesByDepartment(department.url);
       department.disciplines = disciplines;
     }
@@ -51,17 +50,16 @@ export default class SingleFileStrategy {
   }
 
   async #getPreReqs() {
-    for (let i in this.data) {
+    for (let department of this.data) {
       await startDriver();
-      const department = this.data[i];
-      for (let j in department.disciplines) {
-        if (j == department.disciplines.length / 2) {
+      for (let i in department.disciplines) {
+        if (i == department.disciplines.length / 2) {
           // avoid session timeout
           await closeDriver();
           await startDriver();
         }
         const preReqs = await fetchPreRequisitesByDiscipline(
-          department.disciplines[j].url
+          department.disciplines[i].url
         );
         department.disciplines[i].requisites = preReqs;
       }

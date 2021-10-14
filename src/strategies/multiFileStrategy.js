@@ -52,11 +52,9 @@ export default class MultiFileStrategy {
   }
 
   async #getPreReqsByDepartment(department) {
-    for (let j in department.disciplines) {
-      const preReqs = await fetchPreRequisitesByDiscipline(
-        department.disciplines[j].url
-      );
-      department.disciplines[j].requisites = preReqs;
+    for (let discipline of department.disciplines) {
+      const preReqs = await fetchPreRequisitesByDiscipline(discipline.url);
+      discipline.requisites = preReqs;
     }
   }
 }
